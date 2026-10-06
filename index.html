@@ -95,97 +95,99 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 </div><p class="notice" style="text-align:center;margin-top:22px">Los servicios se realizan sobre equipos del cliente y dentro de las posibilidades técnicas y autorizaciones correspondientes.</p></div></section>
 </main><footer>© 2026 DecoTech · Servicio técnico de decodificadores</footer>
 <script>
-document.getElementById('survey').addEventListener('submit',function(e){e.preventDefault();document.getElementById('success').style.display='block';this.reset();});
-const deviceServices=document.getElementById('device-services'),deviceTitle=document.getElementById('device-title');
-let selectedDevice='',selectedService='';
-document.querySelectorAll('.device-btn').forEach(btn=>btn.addEventListener('click',()=>{
- document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
- btn.classList.add('active');
- selectedDevice=btn.dataset.device;
- selectedService='';
- deviceTitle.textContent='🛠️ Servicios para '+selectedDevice;
- document.getElementById('request-box').style.display='none';
- document.getElementById('image-preview').style.display='none';
- document.getElementById('lock-image').value='';
- deviceServices.style.display='block';
- deviceServices.scrollIntoView({behavior:'smooth',block:'center'});
-}));
-const requestBox=document.getElementById('request-box');
-const requestSummary=document.getElementById('request-summary');
-const lockImage=document.getElementById('lock-image');
-const lockPreview=document.getElementById('lock-preview');
-const imagePreview=document.getElementById('image-preview');
-const imageName=document.getElementById('image-name');
-const sendRequest=document.getElementById('send-request');
+(function(){
+  const survey=document.getElementById('survey');
+  if(survey){
+    survey.addEventListener('submit',function(e){
+      e.preventDefault();
+      const ok=document.getElementById('success');
+      if(ok) ok.style.display='block';
+      this.reset();
+    });
+  }
 
-document.querySelectorAll('.service-action').forEach(opt=>opt.addEventListener('click',()=>{
- selectedService=opt.dataset.service;
- requestSummary.textContent='Equipo: '+selectedDevice+' · Servicio: '+selectedService;
- requestBox.style.display='block';
- requestBox.scrollIntoView({behavior:'smooth',block:'center'});
-}));
+  const deviceServices=document.getElementById('device-services');
+  const deviceTitle=document.getElementById('device-title');
+  const requestBox=document.getElementById('request-box');
+  const requestSummary=document.getElementById('request-summary');
+  const lockImage=document.getElementById('lock-image');
+  const lockPreview=document.getElementById('lock-preview');
+  const imagePreview=document.getElementById('image-preview');
+  const imageName=document.getElementById('image-name');
+  const sendRequest=document.getElementById('send-request');
+  const photoStatus=document.getElementById('photo-status');
 
-lockImage.addEventListener('change',()=>{
- const file=lockImage.files[0];
- if(!file)return;
- if(!file.type.startsWith('image/'))return;
- const reader=new FileReader();
- reader.onload=e=>{
-   lockPreview.src=e.target.result;
-   imageName.textContent='✅ Foto seleccionada: '+file.name;
-   imagePreview.style.display='block';
-   sendRequest.textContent='💬 Enviar solicitud + FOTO';
-   document.getElementById('photo-status').textContent='✅ La foto está lista. Al enviar, selecciona WhatsApp para compartirla junto con la solicitud.';
- };
- reader.readAsDataURL(file);
-});
+  let selectedDevice='';
+  let selectedService='';
 
-sendRequest.addEventListener('click',async()=>{
- const equipo=selectedDevice||'No indicado';
- const servicio=selectedService||'No indicado';
- const file=lockImage.files[0];
- const message='Hola, quiero solicitar un servicio.
+  document.querySelectorAll('.device-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDevice=btn.dataset.device || 'Otro equipo';
+      selectedService='';
+      if(deviceTitle) deviceTitle.textContent='🛠️ Servicios para '+selectedDevice;
+      if(requestBox) requestBox.style.display='none';
+      if(imagePreview) imagePreview.style.display='none';
+      if(lockImage) lockImage.value='';
+      if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp y enviar solicitud';
+      if(photoStatus) photoStatus.textContent='Selecciona uno de los servicios de arriba.';
+      if(deviceServices){
+        deviceServices.style.display='block';
+        setTimeout(()=>deviceServices.scrollIntoView({behavior:'smooth',block:'center'}),30);
+      }
+    });
+  });
 
-Equipo: '+equipo+'
-Servicio: '+servicio+(file?'
-Foto de bloqueo: la adjunto en este envío.':'
-Foto de bloqueo: no adjunta.');
- if(file && navigator.share && navigator.canShare){
-   try{
-     const shareData={title:'Solicitud DecoTech',text:message,files:[file]};
-     if(navigator.canShare({files:[file]})){await navigator.share(shareData);return;}
-   }catch(e){}
- }
- const text=encodeURIComponent(message);
- window.open('https://wa.me/56942949900?text='+text,'_blank');
-});
-document.querySelectorAll('.service-option').forEach(opt=>opt.addEventListener('click',()=>{
- const device=document.querySelector('.device-btn.active')?.dataset.device||'';
- const service=opt.dataset.service;
- const p=document.querySelector('#contacto .section-title p');
- if(p) p.textContent='Solicitud: '+service+' · Equipo: '+device;
-}));
-document.querySelectorAll('.app-card[data-app]').forEach(app=>app.addEventListener('click',()=>{const p=document.querySelector('#contacto .section-title p');if(p)p.textContent='Solicitud: Instalación de '+app.dataset.app;}));
-const decoOptions=document.getElementById('deco-options'), selectedDeco=document.getElementById('selected-deco');
-document.querySelectorAll('.deco-card').forEach(card=>card.addEventListener('click',()=>{
- const deco=card.dataset.deco;
- selectedDeco.textContent='🛠️ Servicio para '+deco;
- decoOptions.style.display='block';
- decoOptions.scrollIntoView({behavior:'smooth',block:'start'});
-}));
-document.getElementById('close-deco-options').addEventListener('click',()=>{
- decoOptions.style.display='none';
- document.getElementById('equipos').scrollIntoView({behavior:'smooth',block:'start'});
-});
-document.querySelectorAll('.service-choice').forEach(choice=>choice.addEventListener('click',()=>{
- const deco=selectedDeco.textContent.replace('🛠️ Servicio para ','');
- const service=choice.dataset.service;
- if(choice.getAttribute('href')==='#contacto'){
-   setTimeout(()=>{
-     const notice=document.querySelector('#contacto .section-title p');
-     if(notice) notice.textContent='Solicitud: '+service+' · Equipo: '+deco;
-   },50);
- }
-}));
+  document.querySelectorAll('.service-action').forEach(opt=>{
+    opt.addEventListener('click',()=>{
+      selectedService=opt.dataset.service || 'Consulta';
+      if(requestSummary) requestSummary.textContent='Equipo: '+selectedDevice+' · Servicio: '+selectedService;
+      if(requestBox){
+        requestBox.style.display='block';
+        setTimeout(()=>requestBox.scrollIntoView({behavior:'smooth',block:'center'}),30);
+      }
+      if(photoStatus) photoStatus.textContent='Puedes enviar la solicitud con o sin foto.';
+    });
+  });
+
+  if(lockImage){
+    lockImage.addEventListener('change',()=>{
+      const file=lockImage.files && lockImage.files[0];
+      if(!file) return;
+      if(!file.type.startsWith('image/')) return;
+      const reader=new FileReader();
+      reader.onload=e=>{
+        if(lockPreview) lockPreview.src=e.target.result;
+        if(imageName) imageName.textContent='✅ Foto seleccionada: '+file.name;
+        if(imagePreview) imagePreview.style.display='block';
+        if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp + solicitud';
+        if(photoStatus) photoStatus.textContent='La foto quedó seleccionada. WhatsApp se abrirá con los datos; por seguridad del navegador, la foto deberá adjuntarse manualmente en el chat.';
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if(sendRequest){
+    sendRequest.addEventListener('click',()=>{
+      const equipo=selectedDevice || 'No indicado';
+      const servicio=selectedService || 'Consulta general';
+      const file=lockImage && lockImage.files ? lockImage.files[0] : null;
+      let message='Hola, quiero solicitar un servicio en DecoTech.%0A%0AEquipo: '+encodeURIComponent(equipo)+'%0AServicio: '+encodeURIComponent(servicio);
+      if(file){
+        message+='%0A%0A📷 Tengo una foto del equipo/bloqueo para adjuntar en este chat.';
+      }
+      const wa='https://wa.me/56942949900?text='+message;
+      window.location.href=wa;
+    });
+  }
+
+  document.querySelectorAll('.app-card[data-app]').forEach(app=>{
+    app.addEventListener('click',()=>{
+      const p=document.querySelector('#contacto .section-title p');
+      if(p) p.textContent='Solicitud: Instalación de '+app.dataset.app;
+    });
+  });
+})();
 </script>
 </body></html>
