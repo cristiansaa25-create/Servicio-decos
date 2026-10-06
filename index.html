@@ -183,18 +183,30 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
     sendRequest.addEventListener('click',async()=>{
       const equipo=selectedDevice || 'No indicado';
       const servicio=selectedService || 'Consulta general';
-      const file=(lockImage && lockImage.files && lockImage.files[0]) || (cameraImage && cameraImage.files && cameraImage.files[0]) || null;
-      const text='Hola, quiero solicitar un servicio en DecoTech.\\n\\nEquipo: '+equipo+'\\nServicio: '+servicio+(file?'\\n\\n📷 Adjunto foto del equipo/bloqueo.':'');
+      const originalFile=(lockImage && lockImage.files && lockImage.files[0]) || (cameraImage && cameraImage.files && cameraImage.files[0]) || null;
+      const text='Hola, quiero solicitar un servicio en DecoTech.\\n\\nEquipo: '+equipo+'\\nServicio: '+servicio+(originalFile?'\\n\\n📷 Adjunto foto del equipo/bloqueo.':'');
       
-      if(file && navigator.share){
+      if(originalFile){
         try{
-          const shareData={title:'Solicitud DecoTech',text:text,files:[file]};
-          if(!navigator.canShare || navigator.canShare({files:[file]})){
-            await navigator.share(shareData);
+          let file=originalFile;
+          if(!file.type || !file.type.startsWith('image/')){
+            const blob=await file.arrayBuffer();
+            file=new File([blob],file.name || 'foto-deco.jpg',{type:'image/jpeg'});
+          }
+          if(!navigator.share){
+            alert('Este navegador no permite compartir la foto directamente. Abre la página en Google Chrome para enviar la imagen por WhatsApp.');
             return;
           }
+          await navigator.share({
+            title:'Solicitud DecoTech',
+            text:text,
+            files:[file]
+          });
+          return;
         }catch(err){
           if(err && err.name==='AbortError') return;
+          alert('No se pudo compartir la foto. Prueba nuevamente y selecciona WhatsApp desde la ventana de compartir de Android.');
+          return;
         }
       }
 
