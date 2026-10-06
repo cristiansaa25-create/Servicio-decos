@@ -22,7 +22,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 .device-btn{font:inherit;color:#172033;background:#ffffff;cursor:pointer}.device-btn:hover,.device-btn.active{border-color:#38bdf8;transform:translateY(-3px)}.service-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.service-option{display:flex;flex-direction:column;gap:5px;padding:20px;border:1px solid #334155;border-radius:15px;background:#ffffff;transition:.2s}.service-option:hover{border-color:#38bdf8;transform:translateY(-2px)}.service-option span{font-size:1.8rem}.service-option strong{font-size:1rem;color:#172033}.service-action{color:#172033}.service-option small{color:#94a3b8}
 .upload-box{margin:18px 0 20px;padding:18px;border:1px dashed #38a3c7;border-radius:16px;background:#f0f7fb}
 .upload-box p{color:#94a3b8;font-size:.92rem;margin:6px 0 13px}
-.upload-label{display:block;text-align:center;padding:12px;border:1px solid #cbd5e1;border-radius:11px;background:#f8fafc;cursor:pointer;font-weight:800;color:#7dd3fc}
+.upload-label{display:block;text-align:center;padding:12px;border:1px solid #cbd5e1;border-radius:11px;background:#f8fafc;cursor:pointer;font-weight:800;color:#7dd3fc}.photo-buttons{display:grid;grid-template-columns:1fr 1fr;gap:10px}.photo-btn{width:100%;font:inherit}@media(max-width:520px){.photo-buttons{grid-template-columns:1fr}}
 #lock-image{display:none}
 .image-preview{margin-top:14px;text-align:center}
 .image-preview img{display:block;max-width:100%;max-height:260px;margin:0 auto 8px;border-radius:12px;border:1px solid #334155}
@@ -64,8 +64,12 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <div id="request-box" class="upload-box" style="display:none">
 <strong>📋 Tu solicitud</strong>
 <p id="request-summary">Selecciona un servicio.</p>
-<label class="upload-label" for="lock-image">📷 Elegir foto del bloqueo (galería o cámara)</label>
-<input id="lock-image" type="file" accept="image/*">
+<div class="photo-buttons">
+<button class="upload-label photo-btn" id="gallery-btn" type="button">🖼️ Elegir de galería</button>
+<button class="upload-label photo-btn" id="camera-btn" type="button">📷 Tomar foto</button>
+</div>
+<input id="lock-image" type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none">
+<input id="camera-image" type="file" accept="image/*" capture="environment" style="display:none">
 <div id="image-preview" class="image-preview" style="display:none">
 <img id="lock-preview" alt="Vista previa de la pantalla de bloqueo">
 <span id="image-name"></span>
@@ -111,6 +115,9 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
   const requestBox=document.getElementById('request-box');
   const requestSummary=document.getElementById('request-summary');
   const lockImage=document.getElementById('lock-image');
+  const cameraImage=document.getElementById('camera-image');
+  const galleryBtn=document.getElementById('gallery-btn');
+  const cameraBtn=document.getElementById('camera-btn');
   const lockPreview=document.getElementById('lock-preview');
   const imagePreview=document.getElementById('image-preview');
   const imageName=document.getElementById('image-name');
@@ -130,6 +137,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
       if(requestBox) requestBox.style.display='none';
       if(imagePreview) imagePreview.style.display='none';
       if(lockImage) lockImage.value='';
+      if(cameraImage) cameraImage.value='';
       if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp y enviar solicitud';
       if(photoStatus) photoStatus.textContent='Selecciona uno de los servicios de arriba.';
       if(deviceServices){
@@ -151,10 +159,9 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
     });
   });
 
-  if(lockImage){
-    lockImage.addEventListener('change',()=>{
-      const file=lockImage.files && lockImage.files[0];
-      if(!file) return;
+  function handlePhotoChange(input){
+    const file=input && input.files && input.files[0];
+    if(!file) return;
       if(!file.type.startsWith('image/')) return;
       const reader=new FileReader();
       reader.onload=e=>{
@@ -164,15 +171,19 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
         if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp + solicitud';
         if(photoStatus) photoStatus.textContent='La foto quedó seleccionada. WhatsApp se abrirá con los datos; por seguridad del navegador, la foto deberá adjuntarse manualmente en el chat.';
       };
-      reader.readAsDataURL(file);
-    });
+    reader.readAsDataURL(file);
   }
+
+  if(galleryBtn && lockImage) galleryBtn.addEventListener('click',()=>lockImage.click());
+  if(cameraBtn && cameraImage) cameraBtn.addEventListener('click',()=>cameraImage.click());
+  if(lockImage) lockImage.addEventListener('change',()=>handlePhotoChange(lockImage));
+  if(cameraImage) cameraImage.addEventListener('change',()=>handlePhotoChange(cameraImage));
 
   if(sendRequest){
     sendRequest.addEventListener('click',()=>{
       const equipo=selectedDevice || 'No indicado';
       const servicio=selectedService || 'Consulta general';
-      const file=lockImage && lockImage.files ? lockImage.files[0] : null;
+      const file=(lockImage && lockImage.files && lockImage.files[0]) || (cameraImage && cameraImage.files && cameraImage.files[0]) || null;
       let message='Hola, quiero solicitar un servicio en DecoTech.%0A%0AEquipo: '+encodeURIComponent(equipo)+'%0AServicio: '+encodeURIComponent(servicio);
       if(file){
         message+='%0A%0A📷 Tengo una foto del equipo/bloqueo para adjuntar en este chat.';
