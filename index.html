@@ -18,14 +18,14 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 .formbox{max-width:720px;margin:auto;background:#ffffff;border:1px solid #d7dee8;border-radius:20px;padding:26px}label{display:block;margin:13px 0 7px;font-weight:700}input,select,textarea{width:100%;padding:12px 13px;border-radius:11px;border:1px solid #334155;background:#172235;color:#172033;font:inherit}textarea{min-height:120px;resize:vertical}.rating{display:flex;gap:8px;flex-wrap:wrap}.rating input{display:none}.rating label{cursor:pointer;border:1px solid #334155;border-radius:10px;padding:8px 12px;margin:0}.rating input:checked+label{background:#e0f2fe;border-color:var(--accent);color:#0369a1}.notice{font-size:.86rem;color:#94a3b8;margin-top:13px}.success{display:none;padding:12px;border:1px solid #166534;background:#052e16;border-radius:10px;color:#bbf7d0;margin-top:14px}
 .contact{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.contact a,.contact div{padding:20px;background:#ffffff;border:1px solid #d7dee8;border-radius:16px}.contact strong{display:block;margin-bottom:5px}.contact span{color:var(--muted)}footer{padding:35px 0;border-top:1px solid #d7dee8;color:#64748b;text-align:center;font-size:.88rem}
 @media(max-width:800px){.grid,.contact{grid-template-columns:1fr 1fr}.highlight{grid-template-columns:1fr}.navlinks{display:none}}@media(max-width:520px){.grid,.contact{grid-template-columns:1fr}section{padding:48px 0}.hero{padding-top:60px}}
-.deco-card{width:100%;text-align:left;color:inherit;font:inherit;cursor:pointer}.deco-card:hover{transform:translateY(-4px);border-color:#38bdf8}.deco-options{border-color:#38bdf8}.service-choice{display:block;transition:.2s}.service-choice:hover{transform:translateY(-3px);border-color:#38bdf8}.service-choice h3{font-size:1rem}.service-choice p{font-size:.9rem}@media(max-width:800px){.service-choice-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.service-choice-grid{grid-template-columns:1fr}}\n.device-btn{font:inherit;color:#172033;background:#ffffff;cursor:pointer}.device-btn:hover,.device-btn.active{border-color:#38bdf8;transform:translateY(-3px)}.service-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.service-option{display:flex;flex-direction:column;gap:5px;padding:20px;border:1px solid #334155;border-radius:15px;background:#ffffff;transition:.2s}.service-option:hover{border-color:#38bdf8;transform:translateY(-2px)}.service-option span{font-size:1.8rem}.service-option strong{font-size:1rem;color:#172033}.service-option small{color:#94a3b8}
+.deco-card{width:100%;text-align:left;color:inherit;font:inherit;cursor:pointer}.deco-card:hover{transform:translateY(-4px);border-color:#38bdf8}.deco-options{border-color:#38bdf8}.service-choice{display:block;transition:.2s}.service-choice:hover{transform:translateY(-3px);border-color:#38bdf8}.service-choice h3{font-size:1rem}.service-choice p{font-size:.9rem}@media(max-width:800px){.service-choice-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.service-choice-grid{grid-template-columns:1fr}}\n.device-btn{font:inherit;color:#172033;background:#ffffff;cursor:pointer}.device-btn:hover,.device-btn.active{border-color:#38bdf8;transform:translateY(-3px)}.service-menu{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.service-option{display:flex;flex-direction:column;gap:5px;padding:20px;border:1px solid #334155;border-radius:15px;background:#ffffff;transition:.2s}.service-option:hover{border-color:#38bdf8;transform:translateY(-2px)}.service-option span{font-size:1.8rem}.service-option strong{font-size:1rem;color:#172033}.service-action{color:#172033}.service-option small{color:#94a3b8}
 .upload-box{margin:18px 0 20px;padding:18px;border:1px dashed #38a3c7;border-radius:16px;background:#f0f7fb}
 .upload-box p{color:#94a3b8;font-size:.92rem;margin:6px 0 13px}
 .upload-label{display:block;text-align:center;padding:12px;border:1px solid #cbd5e1;border-radius:11px;background:#f8fafc;cursor:pointer;font-weight:800;color:#7dd3fc}
 #lock-image{display:none}
 .image-preview{margin-top:14px;text-align:center}
 .image-preview img{display:block;max-width:100%;max-height:260px;margin:0 auto 8px;border-radius:12px;border:1px solid #334155}
-.image-preview span{display:block;color:#94a3b8;font-size:.82rem;overflow:hidden;text-overflow:ellipsis}
+.image-preview span{display:block;color:#526174;font-size:.82rem;overflow:hidden;text-overflow:ellipsis}
 @media(max-width:520px){.service-menu{grid-template-columns:1fr}}\n</style>
 </head>
 <body>
@@ -69,10 +69,22 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <h3 id="device-title" style="margin-top:0"></h3>
 <p style="color:#526174">Selecciona el servicio que necesitas:</p>
 <div class="service-menu">
-<a class="service-option" data-service="Desbloqueo full" href="#contacto"><span>🔓</span><strong>Desbloqueo full</strong><small>Consulta disponibilidad y compatibilidad</small></a>
-<a class="service-option" data-service="Habilitación modo desarrollador" href="#modo-desarrollador"><span>⚙️</span><strong>Habilitación modo desarrollador</strong><small>Configuración de opciones avanzadas</small></a>
-<a class="service-option" data-service="Instalación de app" href="#contacto"><span>📦</span><strong>Instalación de app</strong><small>Instalación de aplicaciones compatibles</small></a>
-<a class="service-option" data-service="Comprar" href="#contacto"><span>🛒</span><strong>Comprar</strong><small>Consulta equipos, disponibilidad y precio</small></a>
+<button class="service-option service-action" data-service="Desbloqueo full" type="button"><span>🔓</span><strong>Desbloqueo full</strong><small>Consulta disponibilidad y compatibilidad</small></button>
+<button class="service-option service-action" data-service="Habilitación modo desarrollador" type="button"><span>⚙️</span><strong>Habilitación modo desarrollador</strong><small>Configuración de opciones avanzadas</small></button>
+<button class="service-option service-action" data-service="Instalación de app" type="button"><span>📦</span><strong>Instalación de app</strong><small>Instalación de aplicaciones compatibles</small></button>
+<button class="service-option service-action" data-service="Comprar" type="button"><span>🛒</span><strong>Comprar</strong><small>Consulta equipos, disponibilidad y precio</small></button>
+</div>
+<div id="request-box" class="upload-box" style="display:none">
+<strong>📋 Tu solicitud</strong>
+<p id="request-summary">Selecciona un servicio.</p>
+<label class="upload-label" for="lock-image">📷 Subir foto del bloqueo (opcional)</label>
+<input id="lock-image" type="file" accept="image/*" capture="environment">
+<div id="image-preview" class="image-preview" style="display:none">
+<img id="lock-preview" alt="Vista previa de la pantalla de bloqueo">
+<span id="image-name"></span>
+</div>
+<button id="send-request" class="btn primary" type="button" style="width:100%;margin-top:12px">💬 Enviar solicitud</button>
+<p class="notice" style="text-align:center">Se abrirá WhatsApp con los datos de tu solicitud. Si agregaste una foto, podrás enviarla junto al mensaje.</p>
 </div>
 </div></div></section>
 <section id="flujo"><div class="container"><div class="highlight"><div><h2>📡 Flujo TV</h2><p>Venta y configuración de cuentas o licencias de Flujo TV cuando corresponda y sea autorizado para el usuario y dispositivo.</p><a class="btn primary" href="#contacto">Consultar Flujo TV</a></div><div class="pricebox"><small>Consulta disponibilidad</small><div class="price">Flujo TV</div><span>Cuenta / configuración</span></div></div></div></section>
@@ -88,20 +100,34 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <script>
 document.getElementById('survey').addEventListener('submit',function(e){e.preventDefault();document.getElementById('success').style.display='block';this.reset();});
 const deviceServices=document.getElementById('device-services'),deviceTitle=document.getElementById('device-title');
-let selectedDevice='';
+let selectedDevice='',selectedService='';
 document.querySelectorAll('.device-btn').forEach(btn=>btn.addEventListener('click',()=>{
  document.querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
  btn.classList.add('active');
  selectedDevice=btn.dataset.device;
+ selectedService='';
  deviceTitle.textContent='🛠️ Servicios para '+selectedDevice;
- document.getElementById('photo-help').textContent='Equipo seleccionado: '+selectedDevice+'. Ahora puedes subir la foto de la pantalla de bloqueo.';
- deviceServices.style.display='block';
+ document.getElementById('request-box').style.display='none';
  document.getElementById('image-preview').style.display='none';
- document.getElementById('send-lock-whatsapp').style.display='none';
  document.getElementById('lock-image').value='';
+ deviceServices.style.display='block';
  deviceServices.scrollIntoView({behavior:'smooth',block:'center'});
 }));
-const lockImage=document.getElementById('lock-image'),lockPreview=document.getElementById('lock-preview'),imagePreview=document.getElementById('image-preview'),imageName=document.getElementById('image-name'),sendLock=document.getElementById('send-lock-whatsapp');
+const requestBox=document.getElementById('request-box');
+const requestSummary=document.getElementById('request-summary');
+const lockImage=document.getElementById('lock-image');
+const lockPreview=document.getElementById('lock-preview');
+const imagePreview=document.getElementById('image-preview');
+const imageName=document.getElementById('image-name');
+const sendRequest=document.getElementById('send-request');
+
+document.querySelectorAll('.service-action').forEach(opt=>opt.addEventListener('click',()=>{
+ selectedService=opt.dataset.service;
+ requestSummary.textContent='Equipo: '+selectedDevice+' · Servicio: '+selectedService;
+ requestBox.style.display='block';
+ requestBox.scrollIntoView({behavior:'smooth',block:'center'});
+}));
+
 lockImage.addEventListener('change',()=>{
  const file=lockImage.files[0];
  if(!file)return;
@@ -111,13 +137,21 @@ lockImage.addEventListener('change',()=>{
    lockPreview.src=e.target.result;
    imageName.textContent=file.name;
    imagePreview.style.display='block';
-   sendLock.style.display='block';
  };
  reader.readAsDataURL(file);
 });
-sendLock.addEventListener('click',()=>{
- const equipo=selectedDevice||'mi decodificador';
- const text=encodeURIComponent('Hola, quiero solicitar revisión de '+equipo+'. Ya seleccioné una foto de la pantalla de bloqueo en la página y la adjuntaré aquí.');
+
+sendRequest.addEventListener('click',async()=>{
+ const equipo=selectedDevice||'No indicado';
+ const servicio=selectedService||'No indicado';
+ const file=lockImage.files[0];
+ const text='Hola, quiero solicitar un servicio.%0A%0AEquipo: '+encodeURIComponent(equipo)+'%0AServicio: '+encodeURIComponent(servicio)+(file?'%0AFoto de bloqueo: adjunta en este mensaje.':'%0AFoto de bloqueo: no adjunta.');
+ if(file && navigator.share && navigator.canShare){
+   try{
+     const shareData={title:'Solicitud DecoTech',text:'Hola, quiero solicitar un servicio.\n\nEquipo: '+equipo+'\nServicio: '+servicio,files:[file]};
+     if(navigator.canShare({files:[file]})){await navigator.share(shareData);return;}
+   }catch(e){}
+ }
  window.open('https://wa.me/56942949900?text='+text,'_blank');
 });
 document.querySelectorAll('.service-option').forEach(opt=>opt.addEventListener('click',()=>{
