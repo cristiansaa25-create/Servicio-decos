@@ -139,7 +139,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
     sendRequest.addEventListener('click',()=>{
       const equipo=selectedDevice || 'No indicado';
       const servicio=selectedService || 'Consulta general';
-      const text='Hola, quiero solicitar un servicio en DecoTech.\n\nEquipo: '+equipo+'\nServicio: '+servicio+'\n\n📷 Si es necesario, enviaré una foto por este mismo chat.';
+      const text='Hola, quiero solicitar un servicio en DecoTech.'+'%0A%0AEquipo: '+equipo+'%0AServicio: '+servicio+'%0A%0A📷 Si es necesario, enviaré una foto por este mismo chat.';
       const wa='https://wa.me/56942949900?text='+encodeURIComponent(text);
       window.location.href=wa;
     });
