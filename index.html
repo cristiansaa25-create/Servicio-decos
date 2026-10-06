@@ -69,7 +69,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <span id="image-name"></span>
 </div>
 <button id="send-request" class="btn primary" type="button" style="width:100%;margin-top:12px">💬 Enviar solicitud</button>
-<p class="notice" style="text-align:center">Se abrirá WhatsApp con los datos de tu solicitud. Si agregaste una foto, podrás enviarla junto al mensaje.</p>
+<p id="photo-status" class="notice" style="text-align:center">Puedes enviar la solicitud con o sin foto.</p>
 </div>
 </div></div></section>
 <section id="flujo"><div class="container"><div class="highlight"><div><h2>📡 Flujo TV</h2><p>Venta y configuración de cuentas o licencias de Flujo TV cuando corresponda y sea autorizado para el usuario y dispositivo.</p><a class="btn primary" href="#contacto">Consultar Flujo TV</a></div><div class="pricebox"><small>Consulta disponibilidad</small><div class="price">Flujo TV</div><span>Cuenta / configuración</span></div></div></div></section>
@@ -120,8 +120,10 @@ lockImage.addEventListener('change',()=>{
  const reader=new FileReader();
  reader.onload=e=>{
    lockPreview.src=e.target.result;
-   imageName.textContent=file.name;
+   imageName.textContent='✅ Foto seleccionada: '+file.name;
    imagePreview.style.display='block';
+   sendRequest.textContent='💬 Enviar solicitud + FOTO';
+   document.getElementById('photo-status').textContent='✅ La foto está lista. Al enviar, selecciona WhatsApp para compartirla junto con la solicitud.';
  };
  reader.readAsDataURL(file);
 });
@@ -130,13 +132,14 @@ sendRequest.addEventListener('click',async()=>{
  const equipo=selectedDevice||'No indicado';
  const servicio=selectedService||'No indicado';
  const file=lockImage.files[0];
- const text='Hola, quiero solicitar un servicio.%0A%0AEquipo: '+encodeURIComponent(equipo)+'%0AServicio: '+encodeURIComponent(servicio)+(file?'%0AFoto de bloqueo: adjunta en este mensaje.':'%0AFoto de bloqueo: no adjunta.');
+ const message='Hola, quiero solicitar un servicio.\n\nEquipo: '+equipo+'\nServicio: '+servicio+(file?'\nFoto de bloqueo: la adjunto en este envío.':'\nFoto de bloqueo: no adjunta.');
  if(file && navigator.share && navigator.canShare){
    try{
-     const shareData={title:'Solicitud DecoTech',text:'Hola, quiero solicitar un servicio.\n\nEquipo: '+equipo+'\nServicio: '+servicio,files:[file]};
+     const shareData={title:'Solicitud DecoTech',text:message,files:[file]};
      if(navigator.canShare({files:[file]})){await navigator.share(shareData);return;}
    }catch(e){}
  }
+ const text=encodeURIComponent(message);
  window.open('https://wa.me/56942949900?text='+text,'_blank');
 });
 document.querySelectorAll('.service-option').forEach(opt=>opt.addEventListener('click',()=>{
