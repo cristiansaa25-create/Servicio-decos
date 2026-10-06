@@ -50,20 +50,24 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <button class="device device-btn" type="button" data-device="Decos Android chinos">🤖 Decos Android chinos</button>
 <button class="device device-btn" type="button" data-device="Otros equipos compatibles">➕ Otros equipos compatibles</button>
 </div>
-<div id="device-services" class="formbox" style="display:none;margin-top:24px">
-<h3 id="device-title" style="margin-top:0"></h3>
-<p style="color:#aab5c7">Selecciona el servicio que necesitas:</p>
+<div id="device-photo" class="formbox" style="margin-top:24px">
+<h3 style="margin-top:0">📸 ¿Tu deco tiene un bloqueo?</h3>
+<p id="photo-help" style="color:#526174">Selecciona primero tu equipo y luego sube una foto de la pantalla de bloqueo.</p>
 <div class="upload-box">
-<strong>📸 ¿Tu deco muestra un bloqueo?</strong>
-<p>Sube una foto de la pantalla de bloqueo para que podamos revisar tu equipo antes de atenderte.</p>
-<label class="upload-label" for="lock-image">📷 Seleccionar foto del bloqueo</label>
+<strong>📷 Enviar foto del bloqueo</strong>
+<p>La foto nos ayudará a identificar el bloqueo y revisar tu equipo antes de atenderte.</p>
+<label class="upload-label" for="lock-image">📷 Tomar o seleccionar foto</label>
 <input id="lock-image" type="file" accept="image/*" capture="environment">
 <div id="image-preview" class="image-preview" style="display:none">
 <img id="lock-preview" alt="Vista previa de la pantalla de bloqueo">
 <span id="image-name"></span>
 </div>
-<button id="send-lock-whatsapp" class="btn primary" type="button" style="width:100%;margin-top:12px;display:none">💬 Continuar por WhatsApp</button>
+<button id="send-lock-whatsapp" class="btn primary" type="button" style="width:100%;margin-top:12px;display:none">💬 Enviar solicitud por WhatsApp</button>
 </div>
+</div>
+<div id="device-services" class="formbox" style="display:none;margin-top:24px">
+<h3 id="device-title" style="margin-top:0"></h3>
+<p style="color:#526174">Selecciona el servicio que necesitas:</p>
 <div class="service-menu">
 <a class="service-option" data-service="Desbloqueo full" href="#contacto"><span>🔓</span><strong>Desbloqueo full</strong><small>Consulta disponibilidad y compatibilidad</small></a>
 <a class="service-option" data-service="Habilitación modo desarrollador" href="#modo-desarrollador"><span>⚙️</span><strong>Habilitación modo desarrollador</strong><small>Configuración de opciones avanzadas</small></a>
@@ -90,6 +94,7 @@ document.querySelectorAll('.device-btn').forEach(btn=>btn.addEventListener('clic
  btn.classList.add('active');
  selectedDevice=btn.dataset.device;
  deviceTitle.textContent='🛠️ Servicios para '+selectedDevice;
+ document.getElementById('photo-help').textContent='Equipo seleccionado: '+selectedDevice+'. Ahora puedes subir la foto de la pantalla de bloqueo.';
  deviceServices.style.display='block';
  document.getElementById('image-preview').style.display='none';
  document.getElementById('send-lock-whatsapp').style.display='none';
@@ -111,7 +116,8 @@ lockImage.addEventListener('change',()=>{
  reader.readAsDataURL(file);
 });
 sendLock.addEventListener('click',()=>{
- const text=encodeURIComponent('Hola, quiero solicitar revisión de mi '+selectedDevice+'. Tengo una foto de la pantalla de bloqueo y la enviaré por este WhatsApp.');
+ const equipo=selectedDevice||'mi decodificador';
+ const text=encodeURIComponent('Hola, quiero solicitar revisión de '+equipo+'. Ya seleccioné una foto de la pantalla de bloqueo en la página y la adjuntaré aquí.');
  window.open('https://wa.me/56942949900?text='+text,'_blank');
 });
 document.querySelectorAll('.service-option').forEach(opt=>opt.addEventListener('click',()=>{
