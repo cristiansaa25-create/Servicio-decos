@@ -64,18 +64,8 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <div id="request-box" class="upload-box" style="display:none">
 <strong>📋 Tu solicitud</strong>
 <p id="request-summary">Selecciona un servicio.</p>
-<div class="photo-buttons">
-<button class="upload-label photo-btn" id="gallery-btn" type="button">🖼️ Elegir de galería</button>
-<button class="upload-label photo-btn" id="camera-btn" type="button">📷 Tomar foto con cámara</button>
-</div>
-<input id="lock-image" type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none">
-<input id="camera-image" type="file" accept="image/*" capture="environment" style="display:none">
-<div id="image-preview" class="image-preview" style="display:none">
-<img id="lock-preview" alt="Vista previa de la pantalla de bloqueo">
-<span id="image-name"></span>
-</div>
 <button id="send-request" class="btn primary" type="button" style="width:100%;margin-top:12px">💬 Enviar solicitud</button>
-<p id="photo-status" class="notice" style="text-align:center">Puedes enviar la solicitud con o sin foto.</p>
+<p class="notice" style="text-align:center">La solicitud se enviará por WhatsApp. Si necesitas enviar una foto, podrás hacerlo después directamente en el chat.</p>
 </div>
 </div></div></section>
 <section id="apps" style="scroll-margin-top:85px"><div class="container"><div class="section-title"><h2>📱 Aplicaciones disponibles</h2><p>Instalamos y configuramos aplicaciones compatibles con tu equipo.</p></div><div class="app-grid">
@@ -114,15 +104,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
   const deviceTitle=document.getElementById('device-title');
   const requestBox=document.getElementById('request-box');
   const requestSummary=document.getElementById('request-summary');
-  const lockImage=document.getElementById('lock-image');
-  const cameraImage=document.getElementById('camera-image');
-  const galleryBtn=document.getElementById('gallery-btn');
-  const cameraBtn=document.getElementById('camera-btn');
-  const lockPreview=document.getElementById('lock-preview');
-  const imagePreview=document.getElementById('image-preview');
-  const imageName=document.getElementById('image-name');
   const sendRequest=document.getElementById('send-request');
-  const photoStatus=document.getElementById('photo-status');
 
   let selectedDevice='';
   let selectedService='';
@@ -135,11 +117,6 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
       selectedService='';
       if(deviceTitle) deviceTitle.textContent='🛠️ Servicios para '+selectedDevice;
       if(requestBox) requestBox.style.display='none';
-      if(imagePreview) imagePreview.style.display='none';
-      if(lockImage) lockImage.value='';
-      if(cameraImage) cameraImage.value='';
-      if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp y enviar solicitud';
-      if(photoStatus) photoStatus.textContent='Selecciona uno de los servicios de arriba.';
       if(deviceServices){
         deviceServices.style.display='block';
         setTimeout(()=>deviceServices.scrollIntoView({behavior:'smooth',block:'center'}),30);
@@ -155,61 +132,14 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
         requestBox.style.display='block';
         setTimeout(()=>requestBox.scrollIntoView({behavior:'smooth',block:'center'}),30);
       }
-      if(photoStatus) photoStatus.textContent='Puedes enviar la solicitud con o sin foto.';
     });
   });
 
-  function handlePhotoChange(input){
-    const file=input && input.files && input.files[0];
-    if(!file) return;
-      if(!file.type.startsWith('image/')) return;
-      const reader=new FileReader();
-      reader.onload=e=>{
-        if(lockPreview) lockPreview.src=e.target.result;
-        if(imageName) imageName.textContent='✅ Foto seleccionada: '+file.name;
-        if(imagePreview) imagePreview.style.display='block';
-        if(sendRequest) sendRequest.textContent='💬 Abrir WhatsApp + solicitud';
-        if(photoStatus) photoStatus.textContent='La foto quedó seleccionada. WhatsApp se abrirá con los datos; por seguridad del navegador, la foto deberá adjuntarse manualmente en el chat.';
-      };
-    reader.readAsDataURL(file);
-  }
-
-  if(galleryBtn && lockImage) galleryBtn.addEventListener('click',()=>lockImage.click());
-  if(cameraBtn && cameraImage) cameraBtn.addEventListener('click',()=>cameraImage.click());
-  if(lockImage) lockImage.addEventListener('change',()=>handlePhotoChange(lockImage));
-  if(cameraImage) cameraImage.addEventListener('change',()=>handlePhotoChange(cameraImage));
-
   if(sendRequest){
-    sendRequest.addEventListener('click',async()=>{
+    sendRequest.addEventListener('click',()=>{
       const equipo=selectedDevice || 'No indicado';
       const servicio=selectedService || 'Consulta general';
-      const originalFile=(lockImage && lockImage.files && lockImage.files[0]) || (cameraImage && cameraImage.files && cameraImage.files[0]) || null;
-      const text='Hola, quiero solicitar un servicio en DecoTech.\\n\\nEquipo: '+equipo+'\\nServicio: '+servicio+(originalFile?'\\n\\n📷 Adjunto foto del equipo/bloqueo.':'');
-      
-      if(originalFile){
-        try{
-          let file=originalFile;
-          if(!file.type || !file.type.startsWith('image/')){
-            const blob=await file.arrayBuffer();
-            file=new File([blob],file.name || 'foto-deco.jpg',{type:'image/jpeg'});
-          }
-          if(!navigator.share){
-            alert('Este navegador no permite compartir la foto directamente. Abre la página en Google Chrome para enviar la imagen por WhatsApp.');
-            return;
-          }
-          await navigator.share({
-            title:'Solicitud DecoTech',
-            text:text,
-            files:[file]
-          });
-          return;
-        }catch(err){
-          if(err && err.name==='AbortError') return;
-          alert('No se pudo compartir la foto. Prueba nuevamente y selecciona WhatsApp desde la ventana de compartir de Android.');
-          return;
-        }
-      }
-
+      const text='Hola, quiero solicitar un servicio en DecoTech.\\n\\nEquipo: '+equipo+'\\nServicio: '+servicio+'\\n\\n📷 Si es necesario, enviaré una foto por este mismo chat.';
       const wa='https://wa.me/56942949900?text='+encodeURIComponent(text);
       window.location.href=wa;
     });
