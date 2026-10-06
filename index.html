@@ -180,15 +180,25 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
   if(cameraImage) cameraImage.addEventListener('change',()=>handlePhotoChange(cameraImage));
 
   if(sendRequest){
-    sendRequest.addEventListener('click',()=>{
+    sendRequest.addEventListener('click',async()=>{
       const equipo=selectedDevice || 'No indicado';
       const servicio=selectedService || 'Consulta general';
       const file=(lockImage && lockImage.files && lockImage.files[0]) || (cameraImage && cameraImage.files && cameraImage.files[0]) || null;
-      let message='Hola, quiero solicitar un servicio en DecoTech.%0A%0AEquipo: '+encodeURIComponent(equipo)+'%0AServicio: '+encodeURIComponent(servicio);
-      if(file){
-        message+='%0A%0A📷 Tengo una foto del equipo/bloqueo para adjuntar en este chat.';
+      const text='Hola, quiero solicitar un servicio en DecoTech.\\n\\nEquipo: '+equipo+'\\nServicio: '+servicio+(file?'\\n\\n📷 Adjunto foto del equipo/bloqueo.':'');
+      
+      if(file && navigator.share){
+        try{
+          const shareData={title:'Solicitud DecoTech',text:text,files:[file]};
+          if(!navigator.canShare || navigator.canShare({files:[file]})){
+            await navigator.share(shareData);
+            return;
+          }
+        }catch(err){
+          if(err && err.name==='AbortError') return;
+        }
       }
-      const wa='https://wa.me/56942949900?text='+message;
+
+      const wa='https://wa.me/56942949900?text='+encodeURIComponent(text);
       window.location.href=wa;
     });
   }
