@@ -94,35 +94,7 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
 <script>
 (function(){
   const survey=document.getElementById('survey');
-  const REVIEW_KEY='decotech_reviews_v1';
-  const getReviews=()=>{try{return JSON.parse(localStorage.getItem(REVIEW_KEY)||'[]')}catch(e){return []}};
-  const saveReviews=(items)=>localStorage.setItem(REVIEW_KEY,JSON.stringify(items));
-  const esc=(v)=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const stars=(n)=>'⭐'.repeat(Math.max(0,Math.min(5,Number(n)||0)));
-  const renderReviews=()=>{
-    const list=document.getElementById('reviews-list'),empty=document.getElementById('reviews-empty'),summary=document.getElementById('reviews-summary');
-    if(!list||!empty||!summary)return;
-    const reviews=getReviews().sort((a,b)=>(b.ts||0)-(a.ts||0));
-    if(!reviews.length){list.innerHTML='';empty.style.display='block';summary.innerHTML='<div class="reviews-average">⭐ 0,0</div><div class="reviews-count">0 opiniones</div>';return;}
-    empty.style.display='none';
-    const avg=reviews.reduce((s,r)=>s+Number(r.nota||0),0)/reviews.length;
-    summary.innerHTML='<div class="reviews-average">⭐ '+avg.toFixed(1).replace('.',',')+'</div><div><div class="reviews-stars">'+stars(Math.round(avg))+'</div><div class="reviews-count">'+reviews.length+' opinión'+(reviews.length===1?'':'es')+'</div></div>';
-    list.innerHTML=reviews.map(r=>'<article class="review-card"><div class="review-head"><div><div class="review-name">'+esc(r.nombre||'Cliente')+'</div><div class="review-service">'+esc(r.servicio||'Servicio')+' · '+stars(r.nota)+'</div></div><div class="review-date">'+esc(r.fecha||'')+'</div></div>'+(r.comentario?'<p class="review-comment">'+esc(r.comentario)+'</p>':'')+'</article>').join('');
-  };
-  renderReviews();
-  window.addEventListener('storage',renderReviews);
-  if(survey){
-    survey.addEventListener('submit',function(e){
-      e.preventDefault();
-      const data=new FormData(this);
-      const review={id:Date.now().toString(36),ts:Date.now(),nombre:String(data.get('nombre')||'').trim()||'Cliente',servicio:String(data.get('servicio')||''),nota:Number(data.get('nota')||0),comentario:String(data.get('comentario')||'').trim(),fecha:new Date().toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'})};
-      const reviews=getReviews();reviews.push(review);saveReviews(reviews);renderReviews();
-      const ok=document.getElementById('success');
-      if(ok){ok.textContent='¡Gracias por tu evaluación! Tu opinión ya aparece en la sección de opiniones de este navegador.';ok.style.display='block';}
-      this.reset();
-      setTimeout(()=>document.getElementById('opiniones')?.scrollIntoView({behavior:'smooth',block:'start'}),350);
-    });
-  }
+
 
   const deviceServices=document.getElementById('device-services');
   const deviceTitle=document.getElementById('device-title');
@@ -176,5 +148,95 @@ section{padding:64px 0}.section-title{text-align:center;margin-bottom:34px}.sect
     });
   });
 })();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAVN2s9MDp2dPDqR3owjhVnyVfAk8N-9BU",
+  authDomain: "decotech-9a61d.firebaseapp.com",
+  projectId: "decotech-9a61d",
+  storageBucket: "decotech-9a61d.firebasestorage.app",
+  messagingSenderId: "967761314780",
+  appId: "1:967761314780:web:727dc373f8d9d57e578519"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const REVIEWS_COLLECTION = "opiniones";
+
+const esc = (v) => String(v ?? "").replace(/[&<>"']/g, m => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[m]));
+const stars = (n) => "⭐".repeat(Math.max(0, Math.min(5, Number(n) || 0)));
+
+function renderReviews(reviews) {
+  const list=document.getElementById("reviews-list");
+  const empty=document.getElementById("reviews-empty");
+  const summary=document.getElementById("reviews-summary");
+  if(!list||!empty||!summary)return;
+  reviews.sort((a,b)=>(b.ts||0)-(a.ts||0));
+  if(!reviews.length){
+    list.innerHTML="";
+    empty.style.display="block";
+    summary.innerHTML='<div class="reviews-average">⭐ 0,0</div><div class="reviews-count">0 opiniones</div>';
+    return;
+  }
+  empty.style.display="none";
+  const avg=reviews.reduce((s,r)=>s+Number(r.nota||0),0)/reviews.length;
+  summary.innerHTML='<div class="reviews-average">⭐ '+avg.toFixed(1).replace(".",",")+'</div><div><div class="reviews-stars">'+stars(Math.round(avg))+'</div><div class="reviews-count">'+reviews.length+' opinión'+(reviews.length===1?"":"es")+'</div></div>';
+  list.innerHTML=reviews.map(r=>{
+    const fecha=r.fecha || (r.ts ? new Date(r.ts).toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric"}) : "");
+    return '<article class="review-card"><div class="review-head"><div><div class="review-name">'+esc(r.nombre||"Cliente")+'</div><div class="review-service">'+esc(r.servicio||"Servicio")+' · '+stars(r.nota)+'</div></div><div class="review-date">'+esc(fecha)+'</div></div>'+(r.comentario?'<p class="review-comment">'+esc(r.comentario)+'</p>':"")+'</article>';
+  }).join("");
+}
+
+async function loadReviews(){
+  try{
+    const snap=await getDocs(query(collection(db,REVIEWS_COLLECTION),orderBy("createdAt","desc")));
+    const reviews=snap.docs.map(d=>({id:d.id,...d.data(),ts:d.data().createdAt?.toMillis?.()||0}));
+    renderReviews(reviews);
+  }catch(err){
+    console.error("Firestore:",err);
+    renderReviews([]);
+    const empty=document.getElementById("reviews-empty");
+    if(empty){empty.textContent="Las opiniones estarán disponibles cuando se complete la configuración de Firebase.";empty.style.display="block";}
+  }
+}
+
+const survey=document.getElementById("survey");
+if(survey){
+  survey.addEventListener("submit",async function(e){
+    e.preventDefault();
+    const button=this.querySelector('button[type="submit"]');
+    if(button){button.disabled=true;button.textContent="Enviando...";}
+    const data=new FormData(this);
+    const review={
+      nombre:String(data.get("nombre")||"").trim()||"Cliente",
+      servicio:String(data.get("servicio")||""),
+      nota:Number(data.get("nota")||0),
+      comentario:String(data.get("comentario")||"").trim(),
+      fecha:new Date().toLocaleDateString("es-CL",{day:"2-digit",month:"2-digit",year:"numeric"}),
+      createdAt:serverTimestamp()
+    };
+    try{
+      await addDoc(collection(db,REVIEWS_COLLECTION),review);
+      const ok=document.getElementById("success");
+      if(ok){ok.textContent="¡Gracias por tu evaluación! Tu opinión fue publicada correctamente.";ok.style.display="block";}
+      this.reset();
+      await loadReviews();
+      setTimeout(()=>document.getElementById("opiniones")?.scrollIntoView({behavior:"smooth",block:"start"}),350);
+    }catch(err){
+      console.error("No se pudo guardar la opinión:",err);
+      const ok=document.getElementById("success");
+      if(ok){ok.textContent="No se pudo guardar la opinión. Estamos terminando la configuración de Firebase.";ok.style.display="block";}
+    }finally{
+      if(button){button.disabled=false;button.textContent="Enviar encuesta";}
+    }
+  });
+}
+loadReviews();
 </script>
 </body></html>
